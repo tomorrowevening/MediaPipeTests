@@ -1,0 +1,19 @@
+#root {
+  margin: 0 auto;
+  position: relative;
+  text-align: center;
+}
+
+canvas {
+  /* position: absolute; */
+  pointer-events: none;
+  left: 0;
+  top: 0;
+  width: 100%;
+  z-index: 1000;
+}
+
+.options div {
+  display: inline-block;
+  margin: 5px;
+}
