@@ -1,49 +1,43 @@
-import { Category, Classifications, DrawingUtils, FaceLandmarker, FaceLandmarkerResult, FilesetResolver, GestureRecognizer, GestureRecognizerResult, PoseLandmarker, PoseLandmarkerResult } from '@mediapipe/tasks-vision'
+import { FaceLandmarker, FilesetResolver, GestureRecognizer, PoseLandmarker, PoseLandmarkerResult } from '@mediapipe/tasks-vision'
+import Webgl from './Webgl'
+import { Clock } from 'three'
+import { TOTAL_FACES, TOTAL_GESTURES, TOTAL_POSES } from './types'
 
-const PI2 = Math.PI * 2
 const visionURL = 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm'
 const posePath = 'https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task'
 const facePath = 'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task'
 const gesturePath = 'https://storage.googleapis.com/mediapipe-models/gesture_recognizer/gesture_recognizer/float16/1/gesture_recognizer.task'
 
 export default class Application {
+  log?: HTMLElement
   video!: HTMLVideoElement
   width = 0
   height = 0
-  detectFace = false
-  detectPose = false
-  detectGesture = false
+  detectFace = true
+  detectPose = true
+  detectGesture = true
 
   private raf = -1
   private ready = false
-  private lastUpdate = 0
+  private webgl!: Webgl
+  private clock = new Clock()
 
   // MediaPipe
   private poseLandmarker?: PoseLandmarker
   private faceLandmarker?: FaceLandmarker
   private gestureRecognizer?: GestureRecognizer
-  private poseResult?: PoseLandmarkerResult
-  private faceResult?: FaceLandmarkerResult
-  private gestureResult?: GestureRecognizerResult
 
-  // Utils
-  private context?: CanvasRenderingContext2D
-  private drawingUtils?: DrawingUtils
-
-  async init(context: CanvasRenderingContext2D, pose = true, face = true, gesture = true) {
-    this.context = context
-    this.drawingUtils = new DrawingUtils(context)
+  async init(canvas: HTMLCanvasElement, log: HTMLElement, video: HTMLVideoElement) {
+    this.log = log
 
     const vision = await FilesetResolver.forVisionTasks(visionURL)
-    if (pose) await this.createPoseLandmarker(vision)
-    if (face) await this.createFaceLandmarker(vision)
-    if (gesture) await this.createGestureRecognizer(vision)
+    if (this.detectPose) await this.createPoseLandmarker(vision)
+    if (this.detectFace) await this.createFaceLandmarker(vision)
+    if (this.detectGesture) await this.createGestureRecognizer(vision)
 
-    this.detectPose = pose
-    this.detectFace = face
-    this.detectGesture = gesture
+    this.webgl = new Webgl(canvas, video)
+    this.clock.start()
     this.ready = true
-    this.lastUpdate = Date.now()
     console.clear()
   }
 
@@ -55,18 +49,29 @@ export default class Application {
     this.detectGesture = false
     if (this.ready) {
       this.poseLandmarker?.close()
-      this.drawingUtils?.close()
+      this.faceLandmarker?.close()
+      this.gestureRecognizer?.close()
     }
   }
 
   update = () => {
-    const now = Date.now()
-    const delta = now - this.lastUpdate
-    this.lastUpdate = now
-    this.draw(delta)
+    const delta = this.clock.getDelta()
+    const fps = Math.round(1 / delta)
+    if (this.log) this.log.innerHTML = `FPS: ${fps}`
+
+    if (this.video) this.updateDetection()
+    this.webgl.update()
+    this.webgl.draw()
     this.raf = requestAnimationFrame(this.update)
   }
 
+  resize(width: number, height: number) {
+    this.width = width
+    this.height = height
+    this.webgl.resize(width, height)
+  }
+
+  /*
   draw(delta: number) {
     const ctx = this.context!
     const drawBox = (x: number, y: number, total: number, title: string) => {
@@ -144,20 +149,23 @@ export default class Application {
       drawBox(400, 0, 0, `Pose: ${totalPoses}`)
     }
   }
+  */
 
   private updateDetection() {
     // Gestures
-    this.gestureResult = this.detectGesture ? this.gestureRecognizer?.recognizeForVideo(this.video, performance.now()) : undefined
+    this.webgl.gestureResult = this.detectGesture ? this.gestureRecognizer?.recognizeForVideo(this.video, performance.now()) : undefined
 
     // Pose
     if (this.detectPose) {
-      this.poseLandmarker?.detectForVideo(this.video, performance.now(), (result: PoseLandmarkerResult) => this.poseResult = result)
+      this.poseLandmarker?.detectForVideo(this.video, performance.now(), (result: PoseLandmarkerResult) => {
+        this.webgl.poseResult = result
+      })
     } else {
-      this.poseResult = undefined
+      this.webgl.poseResult = undefined
     }
 
     // Face
-    this.faceResult = this.detectFace ? this.faceLandmarker?.detectForVideo(this.video, performance.now()) : undefined
+    this.webgl.faceResult = this.detectFace ? this.faceLandmarker?.detectForVideo(this.video, performance.now()) : undefined
   }
 
   //////////////////////////////////////////////////
@@ -170,7 +178,7 @@ export default class Application {
         delegate: 'GPU'
       },
       runningMode: 'VIDEO',
-      numPoses: 5,
+      numPoses: TOTAL_POSES,
     });
   }
 
@@ -182,7 +190,7 @@ export default class Application {
       },
       outputFaceBlendshapes: true,
       runningMode: 'VIDEO',
-      numFaces: 5,
+      numFaces: TOTAL_FACES,
     })
   }
 
@@ -193,7 +201,7 @@ export default class Application {
         delegate: 'GPU',
       },
       runningMode: 'VIDEO',
-      numHands: 2,
+      numHands: TOTAL_GESTURES,
     })
   }
 }

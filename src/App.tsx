@@ -1,9 +1,8 @@
 import { CSSProperties, useEffect, useRef, useState } from 'react'
 import './App.css'
-import Application from './exp/Application'
+import Application from './experience/Application'
 
-let application: Application
-let context: CanvasRenderingContext2D
+const application = new Application()
 
 const style: CSSProperties = {
   position: 'absolute',
@@ -16,25 +15,22 @@ function App() {
   // References
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
+  const logRef = useRef<HTMLDivElement>(null)
   // States
   const [connected, setConnected] = useState(false)
-  const [detectFaces, setDetectFaces] = useState(true)
-  const [detectHands, setDetectHands] = useState(true)
-  const [detectPoses, setDetectPoses] = useState(true)
+  const [detectFaces, setDetectFaces] = useState(application.detectFace)
+  const [detectHands, setDetectHands] = useState(application.detectGesture)
+  const [detectPoses, setDetectPoses] = useState(application.detectPose)
 
   function resize(width: number, height: number) {
     const canvas = canvasRef.current!
     canvas.width = width
     canvas.height = height
-    application.width = width
-    application.height = height
+    application.resize(width, height)
   }
 
   useEffect(() => {
-    const canvas = canvasRef.current!
-    context = canvas.getContext('2d')!
-    application = new Application()
-    application.init(context).then(() => application.update())
+    application.init(canvasRef.current!, logRef.current!, videoRef.current!)
     return () => {
       application.dispose()
     }
@@ -79,6 +75,7 @@ function App() {
                       const bounds = video.getBoundingClientRect()
                       application.video = video
                       resize(bounds.width, bounds.height)
+                      application.update()
                     }, 500)
                   })
                   .catch((error) => {
@@ -94,7 +91,6 @@ function App() {
       )}
       <video
         ref={videoRef}
-        style={{ border: '1px solid #111', maxWidth: '100%' }}
         width={1200}
       />
       {connected && (
@@ -104,6 +100,7 @@ function App() {
           <div>Poses: <input checked={detectPoses} onChange={handleDetectPoses} type='checkbox' /></div>
         </div>
       )}
+      <div ref={logRef}>FPS: 0</div>
     </div>
   )
 }

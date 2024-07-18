@@ -13,6 +13,12 @@ canvas {
   z-index: 1000;
 }
 
+video {
+  border: 1px solid rgb(17, 17, 17);
+  max-width: 100%;
+  pointer-events: none;
+}
+
 .options div {
   display: inline-block;
   margin: 5px;
