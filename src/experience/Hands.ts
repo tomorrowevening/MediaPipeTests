@@ -1,8 +1,8 @@
-import { GestureRecognizerResult, NormalizedLandmark } from '@mediapipe/tasks-vision';
+import { GestureRecognizerResult } from '@mediapipe/tasks-vision';
 import { Object3D } from 'three';
 import DynamicPoints from './DynamicPoints';
 import { DEFAULT_GESTURE, GESTURE_FOUND, GESTURE_LOST, TOTAL_GESTURES } from './constants';
-import { applyLandmark } from './utils';
+import { updateLandmarkGeom } from './utils';
 
 export default class Hands extends Object3D {
   gestureResult?: GestureRecognizerResult
@@ -37,7 +37,7 @@ export default class Hands extends Object3D {
             this.dispatchEvent({ type: GESTURE_FOUND, value: item, name: this.categoryNames[i] })
           }
 
-          applyLandmark(landmarks[i], item)
+          updateLandmarkGeom(landmarks[i], item)
         } else if (this.categoryNames[i] !== DEFAULT_GESTURE) {
           this.categoryNames[i] = DEFAULT_GESTURE
           // @ts-ignore

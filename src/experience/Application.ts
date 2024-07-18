@@ -16,10 +16,10 @@ export default class Application {
   detectFace = true
   detectPose = true
   detectGesture = true
+  webgl!: Webgl
 
   private raf = -1
   private ready = false
-  private webgl!: Webgl
   private clock = new Clock()
 
   // MediaPipe
@@ -42,6 +42,7 @@ export default class Application {
   }
 
   dispose() {
+    this.webgl.dispose()
     cancelAnimationFrame(this.raf)
     this.raf = -1
     this.detectPose = false

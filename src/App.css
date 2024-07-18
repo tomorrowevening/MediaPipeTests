@@ -13,7 +13,7 @@
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  z-index: 2;
+  z-index: 3;
 }
 
 .container canvas {
@@ -35,4 +35,21 @@
 .container .options div {
   display: inline-block;
   margin: 5px;
+}
+
+.container .overlay {
+  mix-blend-mode: difference;
+  text-align: left;
+  font-size: 120px;
+  line-height: 100px;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  z-index: 2;
+}
+
+.container .overlay div {
+  display: none;
 }

@@ -1,7 +1,7 @@
 import { NormalizedLandmark } from '@mediapipe/tasks-vision';
 import DynamicPoints from './DynamicPoints';
 
-export function applyLandmark(landmarks: NormalizedLandmark[], item: DynamicPoints) {
+export function updateLandmarkGeom(landmarks: NormalizedLandmark[], item: DynamicPoints) {
   landmarks.forEach((landmark: NormalizedLandmark, index: number) => {
     const n = index * 3
     item.positions[n + 0] = landmark.x
@@ -16,6 +16,6 @@ export function cycleLandmarks(landmarks: NormalizedLandmark[][], items: Dynamic
   for (let i = 0; i < total; i++) {
     const item = items[i]
     item.visible = i < totalLandmarks
-    if (item.visible) applyLandmark(landmarks[i], item)
+    if (item.visible) updateLandmarkGeom(landmarks[i], item)
   }
 }

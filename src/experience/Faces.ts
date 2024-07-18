@@ -1,4 +1,4 @@
-import { FaceLandmarkerResult, NormalizedLandmark } from '@mediapipe/tasks-vision';
+import { FaceLandmarkerResult } from '@mediapipe/tasks-vision';
 import { Object3D } from 'three';
 import DynamicPoints from './DynamicPoints';
 import { TOTAL_FACES } from './constants';

@@ -1,12 +1,17 @@
 import { useEffect, useRef, useState } from 'react'
 import './App.css'
 import Application from './experience/Application'
+import { POSE_DETECTED } from './experience/constants'
 
 function App() {
   // References
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const logRef = useRef<HTMLDivElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
+  const letterYRef = useRef<HTMLDivElement>(null)
+  const letterMRef = useRef<HTMLDivElement>(null)
+  const letterCRef = useRef<HTMLDivElement>(null)
+  const letterARef = useRef<HTMLDivElement>(null)
 
   // States
   const [application] = useState(new Application())
@@ -60,24 +65,50 @@ function App() {
             }, 500)
           })
           .catch((error) => {
-            console.error("Error accessing the webcam: ", error);
+            console.error('Error accessing the webcam: ', error);
           });
       } else {
-        alert("getUserMedia is not supported by your browser.");
+        alert('getUserMedia is not supported by your browser.');
       }
     }
   }
 
   useEffect(() => {
-    application.init(canvasRef.current!, logRef.current!, videoRef.current!)
+    const onPoseDetected = (evt: any) => {
+      console.log(`Pose: ${evt.value}`)
+      switch (evt.value) {
+        case 'y':
+          letterYRef.current!.style.display = 'block'
+          break
+        case 'm':
+          letterMRef.current!.style.display = 'block'
+          break
+        case 'c':
+          letterCRef.current!.style.display = 'block'
+          break
+        case 'a':
+          letterARef.current!.style.display = 'block'
+          break
+      }
+    }
+    application.init(canvasRef.current!, logRef.current!, videoRef.current!).then(() => {
+      application.webgl.poses.addEventListener(POSE_DETECTED, onPoseDetected)
+    })
     return () => {
+      application.webgl.poses.removeEventListener(POSE_DETECTED, onPoseDetected)
       application.dispose()
     }
-  }, [])
+  }, [application])
 
   return (
     <div className='container'>
       <canvas ref={canvasRef} width={1200} height={600} />
+      <div className='overlay'>
+        <div ref={letterYRef}>Y</div>
+        <div ref={letterMRef}>M</div>
+        <div ref={letterCRef}>C</div>
+        <div ref={letterARef}>A</div>
+      </div>
       {!connected && (
         <button onClick={onConnect}>Enable Webcam to Begin</button>
       )}

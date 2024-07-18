@@ -1,6 +1,6 @@
 import { FaceLandmarkerResult, GestureRecognizerResult, PoseLandmarkerResult } from '@mediapipe/tasks-vision';
-import { ColorManagement, LinearSRGBColorSpace, Mesh, MeshBasicMaterial, OrthographicCamera, PerspectiveCamera, PlaneGeometry, Scene, VideoTexture, WebGLRenderer } from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
+import { ColorManagement, LinearSRGBColorSpace, Mesh, MeshBasicMaterial, OrthographicCamera, PlaneGeometry, Scene, VideoTexture, WebGLRenderer } from 'three';
+// import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import Faces from './Faces';
 import Hands from './Hands'
 import Poses from './Poses';
@@ -31,8 +31,6 @@ export default class Webgl {
     this.camera = new OrthographicCamera(0, 1, 0, -1, 1, 100)
     // this.camera = new PerspectiveCamera(60, canvas.width / canvas.height, 0.01, 100)
     this.camera.position.z = 2
-    // @ts-ignore
-    window.camera = this.camera
 
     // this.orbit = new OrbitControls(this.camera, canvas)
 
@@ -50,6 +48,10 @@ export default class Webgl {
 
     this.poses = new Poses()
     this.scene.add(this.poses)
+  }
+
+  dispose() {
+    this.renderer.dispose()
   }
 
   update() {
