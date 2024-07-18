@@ -13,17 +13,16 @@
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  z-index: 100;
+  z-index: 2;
 }
 
 .container canvas {
   position: absolute;
-  pointer-events: none;
   left: 50%;
   top: 0;
   transform: translateX(-50%);
   width: 100%;
-  z-index: 1000;
+  z-index: 1;
 }
 
 .container video {

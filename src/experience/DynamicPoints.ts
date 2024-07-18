@@ -8,7 +8,7 @@ export default class DynamicPoints extends Points {
     const pos = new Float32Array(total * 3)
     geom.setAttribute('position', new BufferAttribute(pos, 3).setUsage(DynamicDrawUsage));
     super(geom, new PointsMaterial({
-      size: 6,
+      size: 4,
       color: color,
     }))
     this.positions = pos

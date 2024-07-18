@@ -1,7 +1,7 @@
 import { FaceLandmarker, FilesetResolver, GestureRecognizer, PoseLandmarker, PoseLandmarkerResult } from '@mediapipe/tasks-vision'
 import Webgl from './Webgl'
 import { Clock } from 'three'
-import { TOTAL_FACES, TOTAL_GESTURES, TOTAL_POSES } from './types'
+import { TOTAL_FACES, TOTAL_GESTURES, TOTAL_POSES } from './constants'
 
 const visionURL = 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm'
 const posePath = 'https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task'
