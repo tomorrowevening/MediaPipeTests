@@ -1,9 +1,9 @@
 import { FaceLandmarkerResult, GestureRecognizerResult, PoseLandmarkerResult } from '@mediapipe/tasks-vision';
 import { ColorManagement, LinearSRGBColorSpace, Mesh, MeshBasicMaterial, OrthographicCamera, PlaneGeometry, Scene, VideoTexture, WebGLRenderer } from 'three';
 // import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
-import Faces from './Faces';
-import Hands from './Hands'
-import Poses from './Poses';
+import Faces from './faces';
+import Gestures from './gestures'
+import Poses from './poses';
 
 export default class Webgl {
   // Webgl
@@ -14,7 +14,7 @@ export default class Webgl {
   // orbit: OrbitControls
   // Mesh
   faces: Faces
-  hands: Hands
+  gestures: Gestures
   poses: Poses
 
   constructor(canvas: HTMLCanvasElement, video: HTMLVideoElement) {
@@ -43,8 +43,8 @@ export default class Webgl {
     this.faces = new Faces()
     this.scene.add(this.faces)
 
-    this.hands = new Hands()
-    this.scene.add(this.hands)
+    this.gestures = new Gestures()
+    this.scene.add(this.gestures)
 
     this.poses = new Poses()
     this.scene.add(this.poses)
@@ -57,7 +57,7 @@ export default class Webgl {
   update() {
     // this.orbit.update()
     this.faces.update()
-    this.hands.update()
+    this.gestures.update()
     this.poses.update()
   }
 
@@ -82,11 +82,11 @@ export default class Webgl {
   }
 
   get gestureResult(): GestureRecognizerResult | undefined {
-    return this.hands.gestureResult
+    return this.gestures.gestureResult
   }
 
   set gestureResult(value: GestureRecognizerResult | undefined) {
-    this.hands.gestureResult = value
+    this.gestures.gestureResult = value
   }
 
   get poseResult(): PoseLandmarkerResult | undefined {

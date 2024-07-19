@@ -1,5 +1,5 @@
 import { NormalizedLandmark } from '@mediapipe/tasks-vision';
-import { between, getAngle, toDeg } from './math';
+import { between, getAngle, toDeg } from '../math';
 
 // Arms raised
 const raisedLimits = {

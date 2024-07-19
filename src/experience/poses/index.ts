@@ -1,10 +1,10 @@
 import { NormalizedLandmark, PoseLandmarkerResult } from '@mediapipe/tasks-vision';
 import { Object3D } from 'three';
-import DynamicPoints from './DynamicPoints';
-import { POSE_DETECT_ARM_RAISE, POSE_DETECT_YMCA, POSE_DETECTED, TOTAL_POSES } from './constants';
+import DynamicPoints from '../DynamicPoints';
+import { POSE_DETECT_ARM_RAISE, POSE_DETECT_YMCA, POSE_DETECTED, TOTAL_POSES } from '../constants';
 import { isArmPose, isArmRaised } from './poseDetection';
-import { cycleLandmarks } from './utils';
-import { PoseLandmark } from './types';
+import { cycleLandmarks } from '../utils';
+import { PoseLandmark } from '../types';
 
 export default class Poses extends Object3D {
   poseResult?: PoseLandmarkerResult
@@ -25,11 +25,14 @@ export default class Poses extends Object3D {
   update() {
     this.visible = this.poseResult !== undefined
     if (this.poseResult) {
+      console.log(this.poseResult)
       const landmarks = this.poseResult.landmarks
       cycleLandmarks(landmarks, this.items, TOTAL_POSES)
 
-      // TODO: Cycle through every landmark to account for multiple people
-      this.detectPoses(landmarks[0])
+      if (POSE_DETECT_ARM_RAISE || POSE_DETECT_YMCA) {
+        // TODO: Cycle through every landmark to account for multiple people
+        this.detectPoses(landmarks[0])
+      }
     } else {
       this.items.forEach((item: DynamicPoints) => item.visible = false)
     }

@@ -180,6 +180,7 @@ export default class Application {
       },
       runningMode: 'VIDEO',
       numPoses: TOTAL_POSES,
+      // outputSegmentationMasks: true,
     });
   }
 
@@ -189,7 +190,7 @@ export default class Application {
         modelAssetPath: facePath,
         delegate: 'GPU',
       },
-      outputFaceBlendshapes: true,
+      // outputFaceBlendshapes: true,
       runningMode: 'VIDEO',
       numFaces: TOTAL_FACES,
     })
@@ -203,6 +204,9 @@ export default class Application {
       },
       runningMode: 'VIDEO',
       numHands: TOTAL_GESTURES,
+      cannedGesturesClassifierOptions: {
+        categoryAllowlist: ['Open_Palm', 'Pointing_Up', 'Thumb_Down', 'Thumb_Up', 'Victory', 'ILoveYou']
+      }
     })
   }
 }

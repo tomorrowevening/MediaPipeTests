@@ -1,8 +1,8 @@
 import { FaceLandmarkerResult } from '@mediapipe/tasks-vision';
 import { Object3D } from 'three';
-import DynamicPoints from './DynamicPoints';
-import { TOTAL_FACES } from './constants';
-import { cycleLandmarks } from './utils';
+import DynamicPoints from '../DynamicPoints';
+import { TOTAL_FACES } from '../constants';
+import { cycleLandmarks } from '../utils';
 
 export default class Faces extends Object3D {
   faceResult?: FaceLandmarkerResult

@@ -1,10 +1,10 @@
 import { GestureRecognizerResult } from '@mediapipe/tasks-vision';
 import { Object3D } from 'three';
-import DynamicPoints from './DynamicPoints';
-import { DEFAULT_GESTURE, GESTURE_FOUND, GESTURE_LOST, TOTAL_GESTURES } from './constants';
-import { updateLandmarkGeom } from './utils';
+import DynamicPoints from '../DynamicPoints';
+import { DEFAULT_GESTURE, GESTURE_FOUND, GESTURE_LOST, TOTAL_GESTURES } from '../constants';
+import { updateLandmarkGeom } from '../utils';
 
-export default class Hands extends Object3D {
+export default class Gestures extends Object3D {
   gestureResult?: GestureRecognizerResult
   items: DynamicPoints[] = []
   categoryNames: string[] = []
@@ -25,16 +25,22 @@ export default class Hands extends Object3D {
     this.visible = this.gestureResult !== undefined
     if (this.gestureResult) {
       const landmarks = this.gestureResult.landmarks
-      const total = landmarks.length
+      const totalLandmarks = landmarks.length
+      const gestures = this.gestureResult.gestures
+      const totalGestures = gestures.length
+      const handedness = this.gestureResult.handedness
       for (let i = 0; i < TOTAL_GESTURES; i++) {
         const item = this.items[i]
-        item.visible = i < total
+        item.visible = i < totalLandmarks
         if (item.visible) {
-          const changed = this.gestureResult.gestures[i][0].categoryName !== this.categoryNames[i]
-          if (changed) {
-            this.categoryNames[i] = this.gestureResult.gestures[i][0].categoryName
-            // @ts-ignore
-            this.dispatchEvent({ type: GESTURE_FOUND, value: item, name: this.categoryNames[i] })
+          if (i < totalGestures) {
+            const changed = gestures[i][0].categoryName !== this.categoryNames[i]
+            if (changed) {
+              console.log('gesture:', i, gestures[i][0].categoryName, handedness[i][0].categoryName)
+              this.categoryNames[i] = gestures[i][0].categoryName
+              // @ts-ignore
+              this.dispatchEvent({ type: GESTURE_FOUND, value: item, name: this.categoryNames[i] })
+            }
           }
 
           updateLandmarkGeom(landmarks[i], item)
