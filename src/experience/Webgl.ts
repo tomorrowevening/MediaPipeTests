@@ -1,6 +1,5 @@
 import { FaceLandmarkerResult, GestureRecognizerResult, PoseLandmarkerResult } from '@mediapipe/tasks-vision';
 import { ColorManagement, LinearSRGBColorSpace, Mesh, MeshBasicMaterial, OrthographicCamera, PlaneGeometry, Scene, VideoTexture, WebGLRenderer } from 'three';
-// import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import Faces from './faces';
 import Gestures from './gestures'
 import Poses from './poses';
@@ -10,8 +9,7 @@ export default class Webgl {
   renderer: WebGLRenderer
   scene: Scene
   camera: OrthographicCamera
-  // camera: PerspectiveCamera
-  // orbit: OrbitControls
+
   // Mesh
   faces: Faces
   gestures: Gestures
@@ -24,15 +22,13 @@ export default class Webgl {
       canvas,
       stencil: false,
     })
+    this.renderer.autoClear = false
     this.renderer.outputColorSpace = LinearSRGBColorSpace
 
     this.scene = new Scene()
     this.scene.name = 'Detection'
     this.camera = new OrthographicCamera(0, 1, 0, -1, 1, 100)
-    // this.camera = new PerspectiveCamera(60, canvas.width / canvas.height, 0.01, 100)
-    this.camera.position.z = 2
-
-    // this.orbit = new OrbitControls(this.camera, canvas)
+    this.camera.position.z = 10
 
     const videoTexture = new VideoTexture(video)
     const bg = new Mesh(new PlaneGeometry(1, 1), new MeshBasicMaterial({ map: videoTexture }))
@@ -55,20 +51,18 @@ export default class Webgl {
   }
 
   update() {
-    // this.orbit.update()
     this.faces.update()
     this.gestures.update()
     this.poses.update()
   }
 
   draw() {
+    this.renderer.clear()
     this.renderer.render(this.scene, this.camera)
   }
 
   resize(width: number, height: number) {
     this.renderer.setSize(width, height)
-    // this.camera.aspect = width / height
-    this.camera.updateProjectionMatrix()
   }
 
   // Getters / Setters

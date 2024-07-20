@@ -37,7 +37,8 @@
   ],
   "exclude": [
     "dist",
-    "node_modules"
+    "node_modules",
+    "src/experience/glsl"
   ],
   "references": [
     {
